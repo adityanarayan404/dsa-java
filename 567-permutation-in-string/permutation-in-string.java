@@ -1,46 +1,32 @@
 class Solution {
     public boolean checkInclusion(String s1, String s2) {
+        if (s1.length() > s2.length()) return false;
 
-        int n = s1.length();
+        int[] s1Count = new int[26];
+        int[] s2Count = new int[26];
 
-        if(n > s2.length()) {
-            return false;
+        // Count the frequency of characters in s1 and the first window of s2
+        for (int i = 0; i < s1.length(); i++) {
+            s1Count[s1.charAt(i) - 'a']++;
+            s2Count[s2.charAt(i) - 'a']++;
         }
 
-        int[] count1 = new int[26];
-        int[] count2 = new int[26];
-
-        // Count characters of s1
-        for(int i = 0; i < n; i++) {
-            count1[s1.charAt(i) - 'a']++;
+        // Slide the window over s2
+        for (int i = 0; i < s2.length() - s1.length(); i++) {
+            if (matches(s1Count, s2Count)) return true;
+            // Update the window
+            s2Count[s2.charAt(i) - 'a']--;
+            s2Count[s2.charAt(i + s1.length()) - 'a']++;
         }
 
-        // Check every window of s2
-        for(int i = 0; i <= s2.length() - n; i++) {
+        // Check the last window
+        return matches(s1Count, s2Count);
+    }
 
-            // Count characters in current window
-            for(int j = i; j < i + n; j++) {
-                count2[s2.charAt(j) - 'a']++;
-            }
-
-            // Compare both arrays
-            boolean same = true;
-
-            for(int j = 0; j < 26; j++) {
-                if(count1[j] != count2[j]) {
-                    same = false;
-                    break;
-                }
-            }
-
-            if(same) {
-                return true;
-            }
-
-            // Reset count2 for next window
-            count2 = new int[26];
+    private boolean matches(int[] s1Count, int[] s2Count) {
+        for (int i = 0; i < 26; i++) {
+            if (s1Count[i] != s2Count[i]) return false;
         }
-
-        return false;
+        return true;
     }
 }
